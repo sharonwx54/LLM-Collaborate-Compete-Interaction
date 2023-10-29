@@ -30,7 +30,6 @@ class OpenAIWrapper:
     def __init__(self, config = DEFAULT_CONFIG, system_message=""):
         # TODO: set up your API key with the environment variable OPENAIKEY
         openai.api_key = os.environ.get("OPENAI_API_KEY")      
-
         if os.environ.get("USE_AZURE")=="True":
             print("using azure api")
             openai.api_type = "azure"
