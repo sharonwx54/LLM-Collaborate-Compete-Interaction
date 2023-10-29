@@ -5,7 +5,7 @@ MODEL="gpt-3.5-turbo"
 DATA_FILE="grade_school_math.jsonl"
 
 START_IDX=0
-END_IDX=1
+END_IDX=100
 
 # choose method
 METHOD="spp" # ['standard','cot','spp', 'spp_profile', 'spp_fixed_persona']
