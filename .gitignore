@@ -7,3 +7,6 @@ openai_key*
 api_key*
 *.log
 config_ours.sh
+Pipfile
+data/.DS_Store
+.DS_Store
