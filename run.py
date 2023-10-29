@@ -24,7 +24,7 @@ def _post_process_raw_response(task, raw_output_batch, method):
     return unwrapped_output_batch, if_success_batch
 
 def _run_task(task_name, gpt, task, i, method, num_generation):
-    if task_name in ['trivia_creative_writing', 'logic_grid_puzzle']:
+    if task_name in ['trivia_creative_writing', 'logic_grid_puzzle', 'grade_school_math']:
         # get prompt
         prompt = task.get_input_prompt(i, method=method)
         # get raw response
@@ -75,7 +75,7 @@ def _run_task(task_name, gpt, task, i, method, num_generation):
             "parsing_success_flag_spymaster": if_success_batch_spymaster,
             "parsing_success_flag_guesser": if_success_batch_guesser,
             "test_output_infos": test_output_infos
-        }
+        }        
     else:
         raise NotImplementedError(f"task {task_name} not implemented; please choose from ['trivia_creative_writing', 'logic_grid_puzzle', 'codenames_collaborative']")
 
@@ -139,6 +139,16 @@ gpt_configs = {
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
         "stop": None
+    },
+    "gpt-3.5-turbo":{
+        "engine": "gpt-3.5-turbo",
+        "model": "gpt-3.5-turbo",
+        "temperature": 0.0,
+        "max_tokens": 5000,
+        "top_p": 1.0,
+        "frequency_penalty": 0.0,
+        "presence_penalty": 0.0,
+        "stop": None
     }
 }
 
@@ -157,7 +167,7 @@ def parse_args():
     args = argparse.ArgumentParser()
     args.add_argument('--model', type=str, choices=model_choices, required=True)
     args.add_argument('--method', type=str, choices=['standard','cot','spp','spp_profile', 'spp_fixed_persona'], required=True)
-    args.add_argument('--task', type=str, choices=['trivia_creative_writing', 'logic_grid_puzzle', 'codenames_collaborative'], required=True)
+    args.add_argument('--task', type=str, choices=['trivia_creative_writing', 'logic_grid_puzzle', 'codenames_collaborative','grade_school_math'], required=True)
     args.add_argument('--task_data_file', type=str, required=True)
     args.add_argument('--task_start_index', type=int, required=True)
     args.add_argument('--task_end_index', type=int, required=True)

@@ -16,7 +16,8 @@ def log_retry_error(retry_state):
     logging.error(f"Retrying due to error: {retry_state.outcome.exception()}")  
 
 DEFAULT_CONFIG = {
-    "engine": "devgpt4-32k",
+    # "engine": "devgpt4-32k",
+    "model": "gpt-3.5-turbo",
     "temperature": 0.0,
     "max_tokens": 5000,
     "top_p": 1.0,
@@ -33,8 +34,8 @@ class OpenAIWrapper:
         if os.environ.get("USE_AZURE")=="True":
             print("using azure api")
             openai.api_type = "azure"
-        openai.api_base = os.environ.get("API_BASE")
-        openai.api_version = os.environ.get("API_VERSION")
+        # openai.api_base = os.environ.get("API_BASE")
+        # openai.api_version = os.environ.get("API_VERSION")
 
         self.config = config
         print("api config:", config, '\n')
@@ -51,7 +52,9 @@ class OpenAIWrapper:
     def completions_with_backoff(self, **kwargs):
         # print("making api call:", kwargs)
         # print("====================================")
-        return openai.ChatCompletion.create(**kwargs)
+        # return openai.ChatCompletion.create(**kwargs)
+        # print("test", kwargs['messages'])
+        return openai.ChatCompletion.create(model="gpt-3.5-turbo", messages = kwargs['messages'])
 
     def run(self, prompt, n=1, system_message=""):
         """

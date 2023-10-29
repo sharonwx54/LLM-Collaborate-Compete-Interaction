@@ -1,11 +1,24 @@
 import os
 import re
 from tasks.base import Task, DATA_PATH
-from prompts.trivia_creative_writing import standard_prompt, cot_prompt, spp_prompt, spp_prompt_profile, spp_prompt_fixed_persona
+# from prompts.grade_school_math import standard_prompt, cot_prompt, spp_prompt, spp_prompt_profile, spp_prompt_fixed_persona
+from prompts.grade_school_math import spp_prompt
 import json
 # from models import gpt
 
-class TriviaCreativeWritingTask(Task):
+def parse_answer(text):
+    pattern = r'\d+'
+
+    # Use re.findall to find all matches of the pattern in the text
+    matches = re.findall(pattern, text)
+
+    # If matches are found, convert the first match to an integer and return it
+    if matches:
+        number = int(matches[0])
+        return number
+    else:
+        return None
+class GradeSchoolMathTask(Task):
     def __init__(self, file='grade_school_math.jsonl'):
         super().__init__()
         path = os.path.join(DATA_PATH, 'grade_school_math', file)
@@ -23,29 +36,34 @@ class TriviaCreativeWritingTask(Task):
         question = datapoint["question"]
         # answer = datapoint["answer"]
         
-        if method == "standard":
-            input_prompt = standard_prompt.format(question=question)
-        elif method == "cot":
-            input_prompt = cot_prompt.format(question=question)
-        elif method == "spp":
+        # if method == "standard":
+        #     input_prompt = standard_prompt.format(question=question)
+        # elif method == "cot":
+        #     input_prompt = cot_prompt.format(question=question)
+        if method == "spp":
             input_prompt = spp_prompt.format(question=question)
-        elif method == "spp_fixed_persona":
-            input_prompt = spp_prompt_fixed_persona.format(question=question)
-        elif method == "spp_profile":
-            input_prompt = spp_prompt_profile.format(question=question)
+        # elif method == "spp_fixed_persona":
+        #     input_prompt = spp_prompt_fixed_persona.format(question=question)
+        # elif method == "spp_profile":
+        #     input_prompt = spp_prompt_profile.format(question=question)
         else:
             raise NotImplementedError(f"method {method} not implemented")
         
         return input_prompt
+    
 
+    
     def test_output(self, idx: int, output: str):
-        # test whether the output includes all the answers of the trivia questions
         instance = self.data[idx]
         answer = instance["answer"]
         info = {'correct': False}
-        if output == answer.split("####")[1].strip():
+        print("output", parse_answer(output), answer.split("####")[1].strip())
+        if str(parse_answer(output)) == answer.split("####")[1].strip():
+            print("output", parse_answer(output))
             info['correct'] = True
         return info
+    
+
 
     @staticmethod
     def prompt_unwrap(response: str, method: str):

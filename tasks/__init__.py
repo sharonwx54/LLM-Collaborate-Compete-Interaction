@@ -8,5 +8,8 @@ def get_task(name, file=None):
     elif name == 'codenames_collaborative':
         from .codenames_collaborative import CodenamesCollaborativeTask
         return CodenamesCollaborativeTask(file)
+    elif name == 'grade_school_math':
+        from .grade_school_math import GradeSchoolMathTask
+        return GradeSchoolMathTask(file)
     else:
         raise NotImplementedError

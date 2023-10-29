@@ -73,5 +73,6 @@ Transforming our future, we await.
 ---
 Now, identify the participants and collaboratively solve the following task step by step. Remember to present your final solution with the prefix "Final answer:".
 
-Task: {question}. Give the answer in numerical format.
+Task: Can you solve the following math problem? Your final answer should only return a single numerical number) 
+{question}
 '''
