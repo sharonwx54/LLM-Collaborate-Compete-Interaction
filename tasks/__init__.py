@@ -11,5 +11,8 @@ def get_task(name, file=None):
     elif name == 'grade_school_math':
         from .grade_school_math import GradeSchoolMathTask
         return GradeSchoolMathTask(file)
+    elif name =='massive_multitask_language_understanding':
+        from .massive_multitask_language_understanding import MMLUTask
+        return MMLUTask(file)
     else:
         raise NotImplementedError
