@@ -1,3 +1,4 @@
+# SPP Portion
 # Official Repo of paper [Solo Performance Prompting (SPP)](https://arxiv.org/abs/2307.05300)
 
 ![Illustration of Solo Performance Prompting](asset/teaser_figure_horizontal_png.png) 
@@ -34,6 +35,9 @@ Experimental results in the paper for each task can be found in the `logs/` fold
 - `"task data"`: data for the current task instance, e.g., quetions, answers, target words, etc.
 - `"usage"`: logging for the number of tokens and cost spended so far.
 - other self-explanatory config fields: "model", "method", "temperature", etc.
+
+# Debate Portion
+Refer to https://github.com/composable-models/llm_multiagent_debate
 
 ## Citations
 Please cite the paper and star this repo if you find this work interesting/helpful.
