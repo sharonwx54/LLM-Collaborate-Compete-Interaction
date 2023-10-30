@@ -1,4 +1,5 @@
 import json
+import os
 import openai
 import numpy as np
 import time
@@ -119,10 +120,15 @@ def most_frequent(List):
     return num
 
 if __name__ == "__main__":
-    response_dict = json.load(open("gsm_debate_3_3.json", "r"))
+    path = os.getcwd()+"/debate/gsm/gsm_3_2.json"
+    response_dict = json.load(open(path, "r"))
 
     questions = list(response_dict.keys())
+    response_dict = json.load(open(path, "r"))
 
+    questions = list(response_dict.keys())
+    responses, gt = response_dict[questions[0]]
+    print(responses[0][-1]['content'])
     accuracies = []
 
     for question in questions:
@@ -143,5 +149,4 @@ if __name__ == "__main__":
             pdb.set_trace()
             print(gt)
 
-        print("accuracies:", np.mean(accuracies), np.std(accuracies) / (len(accuracies) ** 0.5))
-
+    print("accuracies:", np.mean(accuracies), np.std(accuracies) / (len(accuracies) ** 0.5))

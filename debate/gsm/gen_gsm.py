@@ -1,4 +1,5 @@
 import openai
+import os
 import json
 import numpy as np
 import random
@@ -34,11 +35,12 @@ if __name__ == "__main__":
     random.seed(0)
 
     generated_description = {}
-
-    questions = read_jsonl("/data/vision/billf/scratch/yilundu/llm_iterative_debate/grade-school-math/grade_school_math/data/test.jsonl")
+    # print(os.getcwd())
+    path = os.getcwd()+"/data/grade_school_math/gsm_subset.jsonl"
+    questions = read_jsonl(path)
     random.shuffle(questions)
 
-    for data in questions[:100]:
+    for data in questions[25:50]:
         question = data['question']
         answer = data['answer']
 
@@ -62,7 +64,7 @@ if __name__ == "__main__":
 
         generated_description[question] = (agent_contexts, answer)
 
-    json.dump(generated_description, open("gsm_{}_{}.json".format(agents, rounds), "w"))
+    json.dump(generated_description, open(os.getcwd()+"/debate/gsm/gsm_{}_{}2.json".format(agents, rounds), "w"))
 
     import pdb
     pdb.set_trace()
