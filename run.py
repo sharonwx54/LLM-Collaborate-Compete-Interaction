@@ -4,6 +4,7 @@ import argparse
 from models import OpenAIWrapper
 from tasks import get_task
 import time
+import numpy as np
 
 
 SLEEP_RATE = 30 # sleep between calls
@@ -84,6 +85,25 @@ def _run_task(task_name, gpt, task, i, method, num_generation):
     log_output.update({"task_data":task.get_input(i)})
     return log_output
 
+def _evaluator(task_name, all_logs):
+    N = len(all_logs)
+    if task_name in ['logic_grid_puzzle', 'grade_school_math','massive_multitask_language_understanding']:
+        num_correct = 0
+        for log in all_logs:
+            if log['test_output_infos'][0]['correct']:
+                num_correct+=1
+        score = num_correct/N
+    elif task_name == 'trivia_creative_writing':
+        # "test_output_infos": [{"correct_count": 4, "question_count": 5}]
+        writing_scores = []
+        for log in all_logs:
+            writing_scores.append(log['test_output_infos'][0]['correct_count'] / log['test_output_infos'][0]['question_count'])
+        score = np.mean(writing_scores)
+    else:
+        raise NotImplementedError
+    return score
+    
+
 def run(args):
     # get configs
     gpt_config = args['gpt_config']
@@ -126,6 +146,10 @@ def run(args):
         output_log_jsonl(log_file, all_logs)
         # sleep
         time.sleep(SLEEP_RATE)
+    score = _evaluator(task_name, all_logs)
+    print("final score:", score)
+    with open(log_file, "a+") as f:
+        f.write(f"\nfinal score: {score}" + "\n")
 
 
 

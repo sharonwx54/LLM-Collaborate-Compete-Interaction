@@ -1,5 +1,5 @@
 
-MODEL="gpt4-32k" # your engine name
+MODEL="gpt-3.5-turbo" # your engine name
 
 DATA_FILE="trivia_creative_writing_100_n_5.jsonl" # ['trivia_creative_writing_100_n_5.jsonl', 'trivia_creative_writing_100_n_10.jsonl']
 
@@ -12,7 +12,7 @@ METHOD="spp" # ['standard','cot','spp', 'spp_profile', 'spp_fixed_persona']
 # w/ or w/o system message (spp works better w/ system message)
 SYSTEM_MESSAGE="You are an AI assistant that helps people find information." # or "" (empty string)
 
-python run.py \
+python3 run.py \
     --model ${MODEL} \
     --method ${METHOD} \
     --task trivia_creative_writing \
