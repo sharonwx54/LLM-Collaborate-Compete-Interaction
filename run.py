@@ -24,11 +24,70 @@ def _post_process_raw_response(task, raw_output_batch, method):
         if_success_batch.append(if_success_flag)
     return unwrapped_output_batch, if_success_batch
 
+def _run_task_combine(task_name, gpt, task, idx, method, num_generation,):
+    agents = 3
+    rounds = 2
+    if task_name == 'grade_school_math_combine':
+        #define question
+        # question = task.get_input(i)["question"]
+
+        # get prompt
+        prompt = task.get_input_prompt(idx, method=method)
+        #create agent contexts for each agent
+        agent_contexts = [[{"role": "user", "content": prompt}] for agent in range(agents)]
+
+        for round in range(rounds):
+            
+            for i, agent_context in enumerate(agent_contexts):
+                if round != 0:
+                    agent_contexts_other = agent_contexts[:i] + agent_contexts[i+1:]
+                    message = task.construct_message(agent_contexts_other, 2*round - 1, idx)
+                    agent_context.append(message)
+                # get raw response
+                # print(agent_context)
+
+                raw_output_batch, raw_response_batch = gpt.run(
+                    prompt=agent_context[-1]['content'],
+                    n=num_generation)
+                print("\n\nprompt\n\n", agent_context[-1]['content'])
+                print("\n\nraw_output_batch\n\n", raw_output_batch)
+                # print(raw_output_batch)
+                if raw_output_batch == [] or raw_response_batch == []: # handle exception
+                    return {}  
+                # get parsed response, and the success flags (whether or not the parsing is success) (standard prompt always success)
+            
+                # assistant_message = task.construct_assistant_message(unwrapped_output_batch)
+                agent_context.append(raw_output_batch[0])
+            
+        results = []
+        success = []
+        for i, agent_context in enumerate(agent_contexts):    
+            unwrapped_output_batch, if_success_batch = _post_process_raw_response(task, [agent_context[-1]], method)                
+            results += unwrapped_output_batch
+            # log output
+        test_output_infos = [task.test_output_compete(idx, results)]
+        log_output = {
+            "idx": idx,
+            # "raw_response": results,
+            "unwrapped_output": results,
+            # "parsing_success_flag": success,
+            "test_output_infos": test_output_infos
+        }
+
+    else:
+        raise NotImplementedError(f"task {task_name} not implemented; please choose from ['trivia_creative_writing', 'logic_grid_puzzle', 'codenames_collaborative']")
+
+    # log everything else that is related
+    # log_output.update(args)
+    log_output.update({"task_data":task.get_input(idx)})
+    return log_output
+
 def _run_task(task_name, gpt, task, i, method, num_generation):
     if task_name in ['trivia_creative_writing', 'logic_grid_puzzle', 'grade_school_math','massive_multitask_language_understanding']:
         # get prompt
         prompt = task.get_input_prompt(i, method=method)
         # get raw response
+        # print(prompt)
         raw_output_batch, raw_response_batch = gpt.run(prompt=prompt, n=num_generation)
         if raw_output_batch == [] or raw_response_batch == []: # handle exception
             return {}    
@@ -44,6 +103,7 @@ def _run_task(task_name, gpt, task, i, method, num_generation):
             "parsing_success_flag": if_success_batch,
             "test_output_infos": test_output_infos
         }
+        
     elif task_name == 'codenames_collaborative':
         # get spymaster hint word
         spymaster_prompt = task.get_input_prompt(i, method=method, role='spymaster')
@@ -77,6 +137,7 @@ def _run_task(task_name, gpt, task, i, method, num_generation):
             "parsing_success_flag_guesser": if_success_batch_guesser,
             "test_output_infos": test_output_infos
         }        
+
     else:
         raise NotImplementedError(f"task {task_name} not implemented; please choose from ['trivia_creative_writing', 'logic_grid_puzzle', 'codenames_collaborative']")
 
@@ -139,7 +200,10 @@ def run(args):
     end = min(end_idx, len(task))
     print("total num of instances:", end - start)
     for i in range(start, end):
-        log_output = _run_task(task_name, gpt, task, i, method, num_generation)
+        if "combine" in task_name:
+            log_output = _run_task_combine(task_name, gpt, task, i, method, num_generation)
+        else:
+            log_output = _run_task(task_name, gpt, task, i, method, num_generation)
         all_logs.append(log_output)
         print("\tidx:", i, "done | usage so far:", gpt.compute_gpt_usage())
         # output log at each iteration
@@ -190,8 +254,8 @@ def parse_args():
     model_choices = list(gpt_configs.keys())
     args = argparse.ArgumentParser()
     args.add_argument('--model', type=str, choices=model_choices, required=True)
-    args.add_argument('--method', type=str, choices=['standard','cot','spp','spp_profile', 'spp_fixed_persona'], required=True)
-    args.add_argument('--task', type=str, choices=['trivia_creative_writing', 'logic_grid_puzzle', 'codenames_collaborative','grade_school_math','massive_multitask_language_understanding'], required=True)
+    args.add_argument('--method', type=str, choices=['standard','cot','spp','spp_profile', 'spp_fixed_persona','spp_compete'], required=True)
+    args.add_argument('--task', type=str, choices=['trivia_creative_writing', 'trivia_creative_writing_combine' ,'logic_grid_puzzle', 'logic_grid_puzzle_combine','codenames_collaborative','codenames_collaborative_combine','grade_school_math','grade_school_math_combine','massive_multitask_language_understanding','massive_multitask_language_understanding_combine'], required=True)
     args.add_argument('--task_data_file', type=str, required=True)
     args.add_argument('--task_start_index', type=int, required=True)
     args.add_argument('--task_end_index', type=int, required=True)

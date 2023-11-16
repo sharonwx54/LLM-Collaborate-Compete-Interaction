@@ -49,12 +49,9 @@ class OpenAIWrapper:
     # retry using tenacity
     @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6), retry_error_callback=log_retry_error)
     def completions_with_backoff(self, **kwargs):
-        # print("making api call:", kwargs)
-        # print("====================================")
-        # return openai.ChatCompletion.create(**kwargs)
-        # print("test", kwargs['messages'])
-        return openai.ChatCompletion.create(model="gpt-3.5-turbo", messages = kwargs['messages'])
-
+        # print("kwargs:", kwargs)
+        return openai.ChatCompletion.create(model="gpt-3.5-turbo",  messages = kwargs['messages'])
+     
     def run(self, prompt, n=1, system_message=""):
         """
             prompt: str
@@ -81,6 +78,7 @@ class OpenAIWrapper:
             while n > 0:
                 cnt = min(n, 10) # number of generations per api call
                 n -= cnt
+                # print(messages)
                 res = self.completions_with_backoff(messages=messages, n=cnt, **self.config)
                 text_outputs.extend([choice["message"]["content"] for choice in res["choices"]])
                 # add prompt to log

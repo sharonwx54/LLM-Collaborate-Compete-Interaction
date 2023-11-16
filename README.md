@@ -15,6 +15,7 @@ We provide running scripts for each of the three tasks, please check out the com
 - Trivia Creative Writing: `bash scripts/trivia_creative_writing.sh`
 - Codenames Collaborative: `bash scripts/codenames_collaborative.sh`
 - Logic Grid Puzzle: `bash scripts/logic_grid_puzzle.sh`
+- Grade School Math: `bash scripts/grade_school_math.sh`
 
 ## Prompts
 All prompts can be found in the `prompts/` folder. 
