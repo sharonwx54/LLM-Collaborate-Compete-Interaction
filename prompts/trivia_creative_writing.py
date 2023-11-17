@@ -87,7 +87,7 @@ Transforming our future, we await.
 ---
 Now, identify the participants and collaboratively solve the following task step by step. Remember to present your final solution with the prefix "Final answer:".
 
-Task: Write a short and coherent story about {topic} that incorporates the answers to the following {n} questions: {questions}
+Task: Write a short and coherent story about {topic} that incorporates the answers to the following {n} questions: {questions}. Explain your reasoning. Your final answer should be a single paragraph, in the form \\boxed{{answer}}, at the end of your response.
 '''
 
 spp_prompt_profile = '''When faced with a task, begin by identifying the participants who will contribute to solving the task. Provide profiles of the participants, describing their expertise or needs. Then, initiate a multi-round collaboration process until a final solution is reached. The participants will give critical comments and detailed suggestions whenever necessary.
