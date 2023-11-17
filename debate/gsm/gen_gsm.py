@@ -40,7 +40,7 @@ if __name__ == "__main__":
     questions = read_jsonl(path)
     random.shuffle(questions)
 
-    for data in questions[25:50]:
+    for data in questions:
         question = data['question']
         answer = data['answer']
 

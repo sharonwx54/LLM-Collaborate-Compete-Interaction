@@ -10,7 +10,7 @@ directory = path.Path(__file__).abspath()
 # setting path
 sys.path.append(directory.parent.parent.parent)
 
-from prompts.grade_school_math import compete_spp_prompt
+from prompts.grade_school_math import spp_prompt
 
 def construct_message(agents, question, idx):
     if len(agents) == 0:
@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
         # instead of asking question, input SPP and question together and feed into agents
         agent_contexts = [[
-            {"role": "user", "content": compete_spp_prompt.format(question=question)}] for agent in range(agents)]
+            {"role": "user", "content": spp_prompt.format(question=question)}] for agent in range(agents)]
 
         for round in range(rounds):
             for i, agent_context in enumerate(agent_contexts):
