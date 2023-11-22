@@ -120,10 +120,7 @@ def most_frequent(List):
     return num
 
 if __name__ == "__main__":
-    path = os.getcwd()+"/debate/gsm/gsm_3_2.json"
-    response_dict = json.load(open(path, "r"))
-
-    questions = list(response_dict.keys())
+    path = os.getcwd()+"/debate/gsm/gsm_spp_3_2.json"
     response_dict = json.load(open(path, "r"))
 
     questions = list(response_dict.keys())
