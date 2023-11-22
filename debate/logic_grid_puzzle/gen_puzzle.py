@@ -6,6 +6,7 @@ import random
 import openai
 import os
 from tqdm import tqdm
+import re
 
 
 def construct_message(agents, question, idx):
@@ -45,17 +46,21 @@ def generate_answer(answer_context):
     return completion
 
 
-def parse_question_answer(df, ix):
-    question = df.iloc[ix, 0]
-    a = df.iloc[ix, 1]
-    b = df.iloc[ix, 2]
-    c = df.iloc[ix, 3]
-    d = df.iloc[ix, 4]
+def parse_question_answer(context):
+    inputs = context["inputs"]
+    alphabet = ["A", "B", "C", "D", "E"]
+    alphabet_mapping = {"1": "A", "2": "B", "3": "C", "4": "D", "5": "E"}
+    matches = re.findall(r'choice: (.*?)(\s|$)', inputs)
+    choice_text = ""
+    for i in range(len(matches)):
+        choice_text += alphabet[i] + ") " + matches[i][0] + '\n'
 
-    question = "Can you answer the following question as accurately as possible? {}: A) {}, B) {}, C) {}, D) {} Explain your answer, putting the answer in the form (X) at the end of your response.".format(
-        question, a, b, c, d)
+    question = re.sub(r'\?[^?]*$', '?', inputs)
 
-    answer = df.iloc[ix, 5]
+    question = "Can you answer the following question as accurately as possible? {}\n{}Explain your answer, putting the answer in the form (X) at the end of your response.".format(
+        question, choice_text)
+
+    answer = alphabet_mapping[context["targets"][0]]
 
     return question, answer
 
@@ -66,29 +71,19 @@ if __name__ == "__main__":
     agents = 3
     rounds = 2
 
-    tasks = glob(
-        "/Users/pamela/Documents/11667/LLM-Collaborate-Compete-Interaction/data/massive_multitask_language_understanding/test/*.csv")
-    # MMLU data from: https://huggingface.co/datasets/Stevross/mmlu/tree/main
-    dfs = [pd.read_csv(task) for task in tasks]
+    data_path = "/Users/pamela/Documents/11667/LLM-Collaborate-Compete-Interaction/data/logic_grid_puzzle/logic_grid_puzzle_200.jsonl"
+    with open(data_path, 'r') as f:
+        question_list = [json.loads(line) for line in f]
 
-    random.seed(0)
     response_dict = {}
 
-    print(len(dfs))
-
+    # for i in tqdm(range(len(question_list))):
     for i in tqdm(range(100, 200)):
-        df = random.choice(dfs)
-        ix = len(df)
-        idx = random.randint(0, ix-1)
-
-        question, answer = parse_question_answer(df, idx)
+        context = question_list[i]
+        question, answer = parse_question_answer(context)
 
         agent_contexts = [[{"role": "user", "content": question}]
                           for agent in range(agents)]
-
-        print(question)
-        print(answer)
-        print(agent_contexts)
 
         for round in range(rounds):
             for i, agent_context in enumerate(agent_contexts):
@@ -109,4 +104,4 @@ if __name__ == "__main__":
         response_dict[question] = (agent_contexts, answer)
 
     json.dump(response_dict, open(
-        "mmlu_{}_{}-100-200.json".format(agents, rounds), "w"))
+        "puzzle_{}_{}-100-200.json".format(agents, rounds), "w"))

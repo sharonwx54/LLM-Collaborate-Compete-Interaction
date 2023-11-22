@@ -114,7 +114,7 @@ def most_frequent(List):
 
 
 if __name__ == "__main__":
-    response_dict = json.load(open("mmlu_3_2-100-200.json", "r"))
+    response_dict = json.load(open("puzzle_3_2-100-200.json", "r"))
     questions = list(response_dict.keys())
 
     accuracies = []
