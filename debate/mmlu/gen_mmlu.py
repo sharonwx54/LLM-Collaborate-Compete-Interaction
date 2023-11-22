@@ -4,9 +4,6 @@ import json
 import time
 import random
 import openai
-import os
-from tqdm import tqdm
-
 
 def construct_message(agents, question, idx):
     if len(agents) == 0:
@@ -20,9 +17,7 @@ def construct_message(agents, question, idx):
 
         prefix_string = prefix_string + response
 
-    prefix_string = prefix_string + \
-        """\n\n Using the reasoning from other agents as additional advice, can you give an updated answer? Examine your solution and that other agents step by step. Put your answer in the form (X) at the end of your response.""".format(
-            question)
+    prefix_string = prefix_string + """\n\n Using the reasoning from other agents as additional advice, can you give an updated answer? Examine your solution and that other agents step by step. Put your answer in the form (X) at the end of your response.""".format(question)
     return {"role": "user", "content": prefix_string}
 
 
@@ -34,9 +29,9 @@ def construct_assistant_message(completion):
 def generate_answer(answer_context):
     try:
         completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0301",
-            messages=answer_context,
-            n=1)
+                  model="gpt-3.5-turbo-0301",
+                  messages=answer_context,
+                  n=1)
     except:
         print("retrying due to an error......")
         time.sleep(20)
@@ -52,52 +47,38 @@ def parse_question_answer(df, ix):
     c = df.iloc[ix, 3]
     d = df.iloc[ix, 4]
 
-    question = "Can you answer the following question as accurately as possible? {}: A) {}, B) {}, C) {}, D) {} Explain your answer, putting the answer in the form (X) at the end of your response.".format(
-        question, a, b, c, d)
+    question = "Can you answer the following question as accurately as possible? {}: A) {}, B) {}, C) {}, D) {} Explain your answer, putting the answer in the form (X) at the end of your response.".format(question, a, b, c, d)
 
     answer = df.iloc[ix, 5]
 
     return question, answer
 
-
 if __name__ == "__main__":
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-
     agents = 3
     rounds = 2
 
-    tasks = glob(
-        "/Users/pamela/Documents/11667/LLM-Collaborate-Compete-Interaction/data/massive_multitask_language_understanding/test/*.csv")
-    # MMLU data from: https://huggingface.co/datasets/Stevross/mmlu/tree/main
+    tasks = glob("/data/vision/billf/scratch/yilundu/llm_iterative_debate/mmlu/data/test/*.csv")
+
     dfs = [pd.read_csv(task) for task in tasks]
 
     random.seed(0)
     response_dict = {}
 
-    print(len(dfs))
-
-    for i in tqdm(range(100, 200)):
+    for i in range(100):
         df = random.choice(dfs)
         ix = len(df)
         idx = random.randint(0, ix-1)
 
         question, answer = parse_question_answer(df, idx)
 
-        agent_contexts = [[{"role": "user", "content": question}]
-                          for agent in range(agents)]
-
-        print(question)
-        print(answer)
-        print(agent_contexts)
+        agent_contexts = [[{"role": "user", "content": question}] for agent in range(agents)]
 
         for round in range(rounds):
             for i, agent_context in enumerate(agent_contexts):
 
                 if round != 0:
-                    agent_contexts_other = agent_contexts[:i] + \
-                        agent_contexts[i+1:]
-                    message = construct_message(
-                        agent_contexts_other, question, 2 * round - 1)
+                    agent_contexts_other = agent_contexts[:i] + agent_contexts[i+1:]
+                    message = construct_message(agent_contexts_other, question, 2 * round - 1)
                     agent_context.append(message)
 
                 completion = generate_answer(agent_context)
@@ -108,5 +89,4 @@ if __name__ == "__main__":
 
         response_dict[question] = (agent_contexts, answer)
 
-    json.dump(response_dict, open(
-        "mmlu_{}_{}-100-200.json".format(agents, rounds), "w"))
+    json.dump(response_dict, open("mmlu_{}_{}.json".format(agents, rounds), "w"))

@@ -4,7 +4,6 @@ import numpy as np
 import time
 import re
 
-
 def parse_bullets(sentence):
     bullets_preprocess = sentence.split("\n")
     bullets = []
@@ -52,7 +51,6 @@ def solve_math_problems(input_str):
         return matches[-1]
 
     return None
-
 
 def parse_answer(input_str):
     pattern = r'\((\w)\)'
@@ -112,9 +110,8 @@ def most_frequent(List):
 
     return num
 
-
 if __name__ == "__main__":
-    response_dict = json.load(open("mmlu_3_2-100-200.json", "r"))
+    response_dict = json.load(open("mmlu_personalities_3_2.json", "r"))
     questions = list(response_dict.keys())
 
     accuracies = []
@@ -133,6 +130,7 @@ if __name__ == "__main__":
 
         accurate = compute_accuracy(gt, pred_solutions)
 
+
         if accurate is not None:
             accuracies.append(float(accurate))
         else:
@@ -140,7 +138,5 @@ if __name__ == "__main__":
             pdb.set_trace()
             print(gt)
 
-        # print("accuracies:", np.mean(accuracies), np.std(
-        #     accuracies) / (len(accuracies) ** 0.5))
+        print("accuracies:", np.mean(accuracies), np.std(accuracies) / (len(accuracies) ** 0.5))
 
-    print(np.mean(accuracies))
