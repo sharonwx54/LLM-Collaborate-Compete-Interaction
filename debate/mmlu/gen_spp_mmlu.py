@@ -40,7 +40,7 @@ def construct_assistant_message(completion):
 
 def generate_answer(answer_context):
     try:
-        openai.api_key = ""
+        # openai.api_key = ""
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo-0301",
             messages=answer_context,
@@ -110,4 +110,4 @@ if __name__ == "__main__":
         response_dict[question] = (agent_contexts, answer)
 
     json.dump(response_dict, open(
-        "mmlu_{}_{}-0-20-spp-debate.json".format(agents, rounds), "w"))
+        "mmlu_{}_{}-200-spp-debate.json".format(agents, rounds), "w"))
