@@ -73,5 +73,7 @@ Transforming our future, we await.
 ---
 Now, identify the participants and collaboratively solve the following task step by step. Remember to provide the final solution with the following format "Final answer: (a single letter here).".
 
-Task: The following is a multiple choice question (with answers) about{subject}. {question}
+Task: Can you solve the following multiple choice question in {subject}?
+
+{question}
 '''
