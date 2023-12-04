@@ -46,9 +46,9 @@ if __name__ == "__main__":
     # print(os.getcwd())
     path = os.getcwd()+"/data/grade_school_math/gsm_subset.jsonl"
     questions = read_jsonl(path)
-    random.shuffle(questions)
+    #random.shuffle(questions)
 
-    for data in questions:
+    for data in questions[0:100]:
         question = data['question']
         answer = data['answer']
         #print(question)
