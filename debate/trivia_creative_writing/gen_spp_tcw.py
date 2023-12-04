@@ -41,14 +41,14 @@ def read_jsonl(path: str):
 if __name__ == "__main__":
     agents = 3
     rounds = 2
-    random.seed(0)
+    #random.seed(0)
 
     generated_description = {}
     # print(os.getcwd())
     questions = read_jsonl("/Users/sharonzhang/Desktop/LLM-Collaborate-Compete-Interaction/data/trivia_creative_writing/trivia_creative_writing_100_n_5.jsonl")
-    random.shuffle(questions)
+    #random.shuffle(questions)
     count = 0
-    for data in questions[0:5]:
+    for data in questions[15:25]:
         if count > 0 and count % 20 == 0:
             print ("finish {} number of tasks".format(count))
         topic = data['topic']
@@ -82,13 +82,14 @@ if __name__ == "__main__":
 
                 assistant_message = construct_assistant_message(completion)
                 agent_context.append(assistant_message)
-
         generated_description[topic_q_list] = (agent_contexts, ans_list)
         count+=1
+        print(len(generated_description.keys()))
 
     json.dump(generated_description, open(
         "tcw_spp_{}_{}.json".format(agents, rounds), "w"))
-
+    
+    print("Total {} generation".format(count))
     import pdb
     pdb.set_trace()
     print(ans_list)

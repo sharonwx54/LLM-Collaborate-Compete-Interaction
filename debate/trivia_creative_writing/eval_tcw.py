@@ -46,7 +46,7 @@ def parse_answer(input_str):
     return concat
 
 if __name__ == "__main__":
-    path = os.getcwd()+"/debate/trivia_creative_writing/tcw_3_2.json"
+    path = os.getcwd()+"/debate/trivia_creative_writing/tcw_spp_3_2_4.json"
     response_dict = json.load(open(path, "r"))
 
     questions = list(response_dict.keys())
