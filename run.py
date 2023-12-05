@@ -36,6 +36,7 @@ def _run_task(task_name, gpt, task, i, method, num_generation):
         unwrapped_output_batch, if_success_batch = _post_process_raw_response(task, raw_output_batch, method)
         # compute automatic metric (different for each task), e.g., if the output contains all the answers
         test_output_infos = [task.test_output(i, output) for output in unwrapped_output_batch]
+        print(test_output_infos)
         # log output
         log_output = {
             "idx": i,
